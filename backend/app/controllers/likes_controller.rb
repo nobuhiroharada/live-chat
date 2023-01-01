@@ -1,0 +1,23 @@
+class LikesController < ApplicationController
+    before_action :authenticate_user!, only: ['create']
+
+    def create
+        like = Like.new(message_id: params[:id], user_id: current_user.id)
+
+        if like.save
+            render json: { id: like.id, email: current_user.uid, message: '成功しました' }, status: :ok
+        else
+            render json: { message: '保存出来ませんでした', errors: like.errors.messages }, status: :bad_request
+        end
+    end
+
+    def destroy
+        like = Like.find(params[:id])
+
+        if like.destroy
+            render json: { id: like.id, email: like.user.uid, message: '削除に成功しました' }, status: :ok
+        else
+            render json: { message: '削除できませんでした', errors: like.errors.messages }, status: :bad_request
+        end
+    end
+end
